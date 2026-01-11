@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buyer Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      if (
+        !localStorage.getItem("token") ||
+        localStorage.getItem("role") !== "buyer"
+      ) {
+        window.location.href = "/auth/login.html";
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-shopping-bag"></i>
+          <h2>Buyer Portal</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active" data-section="dashboard">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="nav-item" data-section="products">
+            <i class="fas fa-box-open"></i>
+            <span>Products</span>
+          </a>
+          <a href="./orders.html" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>My Orders</span>
+          </a>
+          <a href="../agent.html" class="nav-item">
+            <i class="fas fa-robot"></i>
+            <span>AI Agent</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="top-bar">
+          <h1 id="pageTitle">Dashboard</h1>
+
+          <div class="top-actions">
+            <!-- CART ICON -->
+            <div class="cart-icon" onclick="openCart()">
+              <i class="fas fa-shopping-cart"></i>
+              <span id="cartCount" class="cart-badge">0</span>
+            </div>
+
+            <div class="user-info">
+              <i class="fas fa-user-circle"></i>
+              <span>Buyer</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                "
+              >
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalProducts">0</h3>
+                <p>Available Products</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                "
+              >
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalOrders">0</h3>
+                <p>My Orders</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                "
+              >
+                <i class="fas fa-tags"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalCategories">0</h3>
+                <p>Categories</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="
+                  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                "
+              >
+                <i class="fas fa-truck"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="pendingOrders">0</h3>
+                <p>Pending Orders</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="action-cards">
+              <div class="action-card" onclick="navigateToSection('products')">
+                <i class="fas fa-shopping-bag"></i>
+                <h4>Browse Products</h4>
+                <p>Explore available products</p>
+              </div>
+              <div
+                class="action-card"
+                onclick="window.location.href='./orders.html'"
+              >
+                <i class="fas fa-list"></i>
+                <h4>View Orders</h4>
+                <p>Check your order history</p>
+              </div>
+              <div
+                class="action-card"
+                onclick="window.location.href='../agent.html'"
+              >
+                <i class="fas fa-robot"></i>
+                <h4>AI Assistant</h4>
+                <p>Get help from AI agent</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders -->
+          <div class="dashboard-section">
+            <h3><i class="fas fa-clock"></i> Recent Orders</h3>
+            <div id="recentOrders" class="recent-orders"></div>
+          </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="content-section">
+          <div class="section-header">
+            <h2>Available Products</h2>
+            <div class="search-filter">
+              <input
+                type="text"
+                id="searchProduct"
+                placeholder="Search products..."
+                onkeyup="searchProducts()"
+              />
+              <select
+                id="categoryFilterBuyer"
+                onchange="filterProductsByCategory()"
+              >
+                <option value="">All Categories</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="categoryProducts" class="category-products"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('orderModal')">&times;</span>
+        <h2><i class="fas fa-shopping-cart"></i> Place Order</h2>
+        <div class="order-modal-content">
+          <div class="modal-info-row">
+            <span class="modal-label">Product:</span>
+            <span class="modal-value" id="orderProductName"></span>
+          </div>
+          <div class="modal-info-row">
+            <span class="modal-label">Available Stock:</span>
+            <span class="modal-value" id="orderProductStock"></span>
+          </div>
+          <input type="hidden" id="orderProductId" />
+          <input
+            type="number"
+            id="orderQuantity"
+            placeholder="Enter quantity"
+            min="1"
+          />
+          <button class="btn btn-primary" onclick="confirmOrder()">
+            <i class="fas fa-check"></i> Confirm Order
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- CART MODAL -->
+<div id="cartModal" class="modal">
+  <div class="modal-content modal-large">
+    <span class="close" onclick="closeModal('cartModal')">&times;</span>
+
+    <h2><i class="fas fa-shopping-cart"></i> My Cart</h2>
+
+    <div id="cartItems"></div>
+
+    <div class="cart-footer">
+      <h3>Total: $<span id="cartTotal">0</span></h3>
+      <button class="btn btn-primary" onclick="checkoutCart()">
+        Proceed to Checkout
+      </button>
+    </div>
+  </div>
+</div>
+
+
+    <script src="./buyer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders Management - Admin</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      if (
+        !localStorage.getItem("token") ||
+        localStorage.getItem("role") !== "admin"
+      ) {
+        window.location.href = "/auth/login.html";
+      }
+    </script>
+
+    <style>
+      .orders-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+      }
+
+      .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.5s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .orders-header h2 {
+        font-size: 28px;
+        color: #333;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .orders-header h2 i {
+        color: #667eea;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .order-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05) 0%,
+          rgba(118, 75, 162, 0.05) 100%
+        );
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease;
+        animation-fill-mode: both;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .order-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .order-details {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .order-detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .order-detail-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .order-detail-value {
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+      }
+
+      .status-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .status-selector select {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .status-selector select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn-sm {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+      }
+
+      .no-orders {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+      }
+
+      .no-orders i {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.3;
+      }
+
+      .no-orders p {
+        font-size: 18px;
+      }
+
+      .refresh-btn {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+      }
+
+      .refresh-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+      }
+
+      .status-CONFIRMED { color: #4facfe; }
+      .status-PACKED { color: #f093fb; }
+      .status-SHIPPED { color: #ffd89b; }
+      .status-DELIVERED { color: #43e97b; }
+      .status-REJECTED { color: #f5576c; }
+
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-large {
+        max-width: 800px;
+      }
+
+      .close {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 28px;
+        cursor: pointer;
+        color: #999;
+        transition: all 0.3s ease;
+      }
+
+      .close:hover {
+        color: #333;
+        transform: rotate(90deg);
+      }
+
+      /* ORDER DETAIL MODAL STYLES */
+      .order-detail-container {
+        animation: modalSlideIn 0.4s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .order-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .order-id-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .order-id-badge i {
+        color: #667eea;
+      }
+
+      .order-status-badge {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .order-status-badge.status-CONFIRMED { background: #e3f2fd; color: #1976d2; }
+      .order-status-badge.status-PACKED { background: #f3e5f5; color: #7b1fa2; }
+      .order-status-badge.status-SHIPPED { background: #fff3e0; color: #f57c00; }
+      .order-status-badge.status-DELIVERED { background: #e8f5e9; color: #388e3c; }
+      .order-status-badge.status-REJECTED { background: #ffebee; color: #d32f2f; }
+
+      .order-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .info-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .info-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .info-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .info-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .info-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .payment-PENDING { color: #f57c00; }
+      .payment-PAID { color: #388e3c; }
+      .payment-FAILED { color: #d32f2f; }
+
+      .order-items-section {
+        margin-bottom: 30px;
+      }
+
+      .order-items-section h3,
+      .order-summary h3,
+      .delivery-address h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .order-items-section h3 i,
+      .order-summary h3 i,
+      .delivery-address h3 i {
+        color: #667eea;
+      }
+
+      .items-table {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+      }
+
+      .item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        animation: itemFadeIn 0.5s ease;
+        animation-fill-mode: both;
+      }
+
+      @keyframes itemFadeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .item-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .item-row:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .item-details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .item-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 15px;
+      }
+
+      .item-qty {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .item-price {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+      }
+
+      .original-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 14px;
+      }
+
+      .discounted-price {
+        color: #f5576c;
+        font-size: 15px;
+      }
+
+      .regular-price {
+        color: #333;
+        font-size: 15px;
+      }
+
+      .item-total {
+        color: #667eea;
+        font-size: 16px;
+        margin-left: 10px;
+      }
+
+      .order-summary {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 15px;
+        color: #666;
+      }
+
+      .summary-row:last-child {
+        border-bottom: none;
+      }
+
+      .discount-row {
+        color: #f5576c;
+        font-weight: 600;
+      }
+
+      .total-row {
+        font-size: 20px;
+        font-weight: 700;
+        color: #333;
+        padding-top: 15px;
+        border-top: 2px solid #667eea;
+        margin-top: 10px;
+      }
+
+      .delivery-address {
+        margin-bottom: 20px;
+      }
+
+      .address-card {
+        display: flex;
+        gap: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+      }
+
+      .address-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .address-content {
+        flex: 1;
+      }
+
+      .customer-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .customer-phone {
+        font-size: 14px;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .address-line {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 4px;
+      }
+
+      .address-line:last-child {
+        margin-bottom: 0;
+      }
+
+      @media (max-width: 768px) {
+        .order-info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .item-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .item-price {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .address-card {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body class="orders-page">
+    <div class="orders-container">
+      <div class="orders-header">
+        <h2>
+          <i class="fas fa-shopping-cart"></i>
+          Orders Management
+        </h2>
+        <div style="display: flex; gap: 15px">
+          <button class="refresh-btn" onclick="loadOrders()">
+            <i class="fas fa-sync-alt"></i>
+            Refresh
+          </button>
+          <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+
+      <div id="orders"></div>
+      
+      <!-- ORDER DETAIL MODAL -->
+      <div id="orderDetailModal" class="modal">
+        <div class="modal-content modal-large">
+          <span class="close" onclick="closeOrderModal()">&times;</span>
+          <div id="orderDetailBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./admin-orders.js"></script>
+  </body>
+</html>

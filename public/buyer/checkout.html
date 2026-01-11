@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      perspective: 1000px;
+    }
+
+    .checkout-container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 500px;
+      transform-style: preserve-3d;
+      transform: rotateX(2deg) rotateY(-2deg);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .checkout-container:hover {
+      transform: rotateX(0deg) rotateY(0deg) translateY(-5px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: #667eea;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      width: auto;
+    }
+
+    .back-button:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateX(-3px);
+      box-shadow: none;
+    }
+
+    .back-button::before {
+      content: "←";
+      font-size: 18px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      transform: translateZ(20px);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      outline: none;
+      background: white;
+      transform: translateZ(10px);
+    }
+
+    input:focus, select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateZ(15px);
+    }
+
+    input::placeholder {
+      color: #999;
+    }
+
+    select {
+      cursor: pointer;
+      color: #333;
+    }
+
+    select option {
+      padding: 10px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 8px;
+      transform: translateZ(20px);
+    }
+
+    button[type="submit"]:hover {
+      transform: translateZ(25px) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button[type="submit"]:active {
+      transform: translateZ(20px) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="checkout-container">
+  <button class="back-button" onclick="window.history.back()">Back</button>
+  
+  <h2>Checkout</h2>
+
+  <form id="checkoutForm">
+    <input placeholder="Full Name" required />
+    <input placeholder="Phone" required />
+    <input placeholder="Street" required />
+    <input placeholder="City" required />
+    <input placeholder="Zip" required />
+    <input placeholder="Country" required />
+
+  <select id="paymentMethod" required>
+  <option value="">Select Payment Method</option>
+</select>
+
+
+    <button type="submit">Place Order</button>
+  </form>
+</div>
+
+<script src="./checkout.js"></script>
+</body>
+</html>

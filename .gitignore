@@ -1,0 +1,78 @@
+# =========================
+# Node.js
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Environment variables
+# =========================
+.env
+
+# =========================
+# Python / Virtual Env
+# =========================
+venv/
+__pycache__/
+*.pyc
+
+# =========================
+# Uploads (user files)
+# =========================
+uploads/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# OS junk
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Build / cache
+# =========================
+dist/
+build/
+.cache/
+
+# =========================
+# Runtime
+# =========================
+*.pid
+*.seed
+
+# =========================
+# Coverage
+# =========================
+coverage/
+
+# =========================
+# DATA FILES (CRITICAL)
+# =========================
+src/data/*.json
+
+# Allow example data files
+!src/data/example.store.json
+!src/data/example.orders.json
+
+# =========================
+# AI / Test files
+# =========================
+test-gemini.js
+*.prompt
+*.response
