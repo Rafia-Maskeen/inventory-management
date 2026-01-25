@@ -7,7 +7,7 @@ const dataDir = path.join(__dirname, '../data');
 db.exec(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
 
 const insert = db.prepare(`
-  INSERT confirming OR IGNORE INTO files_data (source, payload)
+  INSERT OR IGNORE INTO files_data (source, payload)
   VALUES (?, ?)
 `);
 
